@@ -996,7 +996,7 @@
         const mouse = new THREE.Vector2();
         const raycaster = new THREE.Raycaster();
         const planeY0 = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0); // Y = 0 plane
-        let touchSupport = false;
+        let hasActiveTouches = false; // Track if there are active touch inputs right now
 
         // ID Generator for wells
         let wellIdCounter = 0;
@@ -1081,8 +1081,8 @@
         }
 
         function detectTouch() {
-            touchSupport = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
-            if (touchSupport) {
+            const hasCapability = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+            if (hasCapability) {
                 document.getElementById('mobile-shield-btn').style.display = 'flex';
                 document.querySelector('.instructions-tip').innerText = 'USE DETECTED VIRTUAL TOUCH PAD CONTROLS';
             }
@@ -1922,7 +1922,7 @@
 
         // MOUSE AND KEYBOARD BINDINGS
         function onMouseMove(event) {
-            if (touchSupport) return; // ignore mouse movement if using touchscreen
+            if (hasActiveTouches) return; // ignore mouse movement if actively using touch
             
             // Normalize screen mouse position
             mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
@@ -1939,6 +1939,7 @@
         }
 
         function onTouchMove(event) {
+            hasActiveTouches = event.touches.length > 0;
             if (event.touches.length > 0) {
                 const t = event.touches[0];
                 
